@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Dictionary Practice - Intelligence Reports</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e17;
+            color: #c9d1d9;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1f2e, #0d1117);
+            border-bottom: 1px solid #30363d;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #58a6ff;
+            font-size: 1.6rem;
+            margin-bottom: 0.3rem;
+        }
+
+        header p {
+            color: #8b949e;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Navigation */
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .question-nav button {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            background: #161b22;
+            color: #8b949e;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .question-nav button:hover {
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+
+        .question-nav button.active {
+            background: #58a6ff;
+            color: #0a0e17;
+            border-color: #58a6ff;
+            font-weight: bold;
+        }
+
+        /* Question card */
+        .question-card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-card .question-number {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #58a6ff;
+            margin-bottom: 0.75rem;
+        }
+
+        .question-card .question-text {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #e6edf3;
+        }
+
+        /* Answer section */
+        .answer-section {
+            margin-top: 1.5rem;
+        }
+
+        .toggle-btn {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .toggle-btn.output-btn {
+            background: #1f6feb;
+        }
+
+        .toggle-btn.output-btn:hover {
+            background: #388bfd;
+        }
+
+        .toggle-btn.answer-btn {
+            background: #238636;
+        }
+
+        .toggle-btn.answer-btn:hover {
+            background: #2ea043;
+        }
+
+        .answer-block {
+            display: none;
+            margin-top: 1rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .answer-block.visible {
+            display: block;
+        }
+
+        .answer-label {
+            background: #1a1f2e;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #58a6ff;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .answer-block pre {
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .answer-block code {
+            font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+            color: #e6edf3;
+        }
+
+        .expected-output {
+            margin-top: 0.75rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .expected-output pre {
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #7ee787;
+            font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+        }
+
+        /* Data reference */
+        .data-toggle {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .data-toggle button {
+            padding: 0.5rem 1.2rem;
+            background: #1a1f2e;
+            color: #8b949e;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .data-toggle button:hover {
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+
+        .data-reference {
+            display: none;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .data-reference.visible {
+            display: block;
+        }
+
+        .data-reference pre {
+            font-family: 'Fira Code', 'Consolas', 'Courier New', monospace;
+            color: #c9d1d9;
+        }
+
+        /* No questions placeholder */
+        .no-questions {
+            text-align: center;
+            color: #8b949e;
+            padding: 3rem;
+            font-style: italic;
+        }
+
+        /* Prev / Next buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .nav-buttons button {
+            padding: 0.5rem 1.2rem;
+            background: #161b22;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-buttons button:hover:not(:disabled) {
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+
+        .nav-buttons button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Python Dictionary Practice</h1>
+        <p>Intelligence Reports Database — Write programs using Python dictionaries and lists</p>
+    </header>
+
+    <div class="container">
+        <div class="data-toggle">
+            <button onclick="toggleData()">Show / Hide Data Reference</button>
+        </div>
+        <div class="data-reference" id="dataReference">
+            <pre id="dataContent"></pre>
+        </div>
+
+        <div class="question-nav" id="questionNav"></div>
+
+        <div id="questionArea">
+            <div class="no-questions">Questions will appear here as they are added.</div>
+        </div>
+
+        <div class="nav-buttons" id="navButtons" style="display:none;">
+            <button id="prevBtn" onclick="navigate(-1)">Previous</button>
+            <button id="nextBtn" onclick="navigate(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+    // ── Intelligence Reports Data ──
+    const reports = [
+        {
+            id: 1,
+            title: "Unusual Naval Activity in South China Sea",
+            classification: "SECRET",
+            source_type: "IMINT",
+            region: "East Asia",
+            summary: "Satellite imagery reveals three previously undetected submarine berths under construction at Yulin Naval Base. Construction appears 60% complete.",
+            date: "2026-02-14",
+            reliability: "B",
+            analyst: "GRIFFIN"
+        },
+        {
+            id: 2,
+            title: "Cyber Intrusion Targeting Baltic Energy Grid",
+            classification: "TOP SECRET",
+            source_type: "SIGINT",
+            region: "Eastern Europe",
+            summary: "Intercepted communications indicate a state-sponsored group is conducting reconnaissance against Lithuanian and Latvian power grid SCADA systems.",
+            date: "2026-03-01",
+            reliability: "A",
+            analyst: "CONDOR"
+        },
+        {
+            id: 3,
+            title: "Arms Shipment via Mozambique Channel",
+            classification: "SECRET",
+            source_type: "HUMINT",
+            region: "East Africa",
+            summary: "A reliable source reports a cargo vessel registered in Panama is transporting small arms from Iran to an undisclosed port in northern Mozambique. ETA mid-March.",
+            date: "2026-02-27",
+            reliability: "C",
+            analyst: "RAVEN"
+        },
+        {
+            id: 4,
+            title: "Political Instability Indicators in Caracas",
+            classification: "CONFIDENTIAL",
+            source_type: "OSINT",
+            region: "South America",
+            summary: "Open-source monitoring shows a 300% increase in anti-government social media activity in Venezuela over the past 30 days, correlating with food shortage reports.",
+            date: "2026-03-10",
+            reliability: "B",
+            analyst: "FALCON"
+        },
+        {
+            id: 5,
+            title: "Nuclear Facility Expansion Near Isfahan",
+            classification: "TOP SECRET",
+            source_type: "IMINT",
+            region: "Middle East",
+            summary: "New overhead imagery shows significant earthmoving activity 12 km northeast of the known Isfahan uranium conversion facility. Possible underground enrichment site.",
+            date: "2026-01-22",
+            reliability: "B",
+            analyst: "GRIFFIN"
+        },
+        {
+            id: 6,
+            title: "Foreign Influence Operation Targeting EU Elections",
+            classification: "SECRET",
+            source_type: "SIGINT",
+            region: "Western Europe",
+            summary: "Signals intelligence reveals a coordinated bot network operating from St. Petersburg pushing disinformation narratives ahead of upcoming French municipal elections.",
+            date: "2026-03-15",
+            reliability: "A",
+            analyst: "CONDOR"
+        },
+        {
+            id: 7,
+            title: "Militant Training Camp in Northern Mali",
+            classification: "SECRET",
+            source_type: "HUMINT",
+            region: "West Africa",
+            summary: "A source with direct access reports a new militant training camp near Kidal accommodating approximately 200 recruits. Training includes IED construction.",
+            date: "2026-03-05",
+            reliability: "B",
+            analyst: "RAVEN"
+        },
+        {
+            id: 8,
+            title: "Diplomatic Back-Channel Between Pyongyang and Tehran",
+            classification: "TOP SECRET",
+            source_type: "HUMINT",
+            region: "East Asia",
+            summary: "A senior diplomatic source confirms secret meetings between DPRK and Iranian officials in Kuala Lumpur focused on ballistic missile technology sharing.",
+            date: "2026-02-08",
+            reliability: "C",
+            analyst: "PHOENIX"
+        },
+        {
+            id: 9,
+            title: "Rare Earth Mineral Stockpiling by PRC",
+            classification: "CONFIDENTIAL",
+            source_type: "OSINT",
+            region: "East Asia",
+            summary: "Trade data analysis indicates China has reduced rare earth exports by 40% while increasing domestic stockpiling, suggesting possible preparation for export restrictions.",
+            date: "2026-03-18",
+            reliability: "A",
+            analyst: "FALCON"
+        },
+        {
+            id: 10,
+            title: "Unidentified Submarine Contact in Norwegian Sea",
+            classification: "SECRET",
+            source_type: "SIGINT",
+            region: "Northern Europe",
+            summary: "Acoustic sensors detected an unidentified submarine transiting the GIUK gap at low speed. Signature does not match known NATO or allied vessels.",
+            date: "2026-03-22",
+            reliability: "B",
+            analyst: "CONDOR"
+        },
+        {
+            id: 11,
+            title: "Fentanyl Precursor Shipments Through Guatemala",
+            classification: "SECRET",
+            source_type: "HUMINT",
+            region: "Central America",
+            summary: "A vetted source reports Chinese-manufactured fentanyl precursors are being routed through Puerto Quetzal to Mexican cartel-linked labs in Sinaloa.",
+            date: "2026-01-30",
+            reliability: "B",
+            analyst: "RAVEN"
+        },
+        {
+            id: 12,
+            title: "Satellite Jamming Tests Over Taiwan Strait",
+            classification: "TOP SECRET",
+            source_type: "SIGINT",
+            region: "East Asia",
+            summary: "Electronic intelligence confirms PLA units conducted GPS jamming exercises across a 200 km corridor in the Taiwan Strait over a 72-hour period.",
+            date: "2026-03-08",
+            reliability: "A",
+            analyst: "CONDOR"
+        },
+        {
+            id: 13,
+            title: "Attempted Recruitment of NATO Official in Brussels",
+            classification: "SECRET",
+            source_type: "HUMINT",
+            region: "Western Europe",
+            summary: "Counterintelligence reports a Russian intelligence officer operating under diplomatic cover approached a mid-level NATO logistics planner at a social event.",
+            date: "2026-02-19",
+            reliability: "A",
+            analyst: "PHOENIX"
+        },
+        {
+            id: 14,
+            title: "Drought-Driven Migration Surge in Horn of Africa",
+            classification: "CONFIDENTIAL",
+            source_type: "OSINT",
+            region: "East Africa",
+            summary: "UN and NGO reporting indicates over 500,000 displaced persons are moving toward the Kenyan border from southern Ethiopia and Somalia due to prolonged drought.",
+            date: "2026-03-12",
+            reliability: "A",
+            analyst: "FALCON"
+        },
+        {
+            id: 15,
+            title: "Weapons Cache Discovery in Eastern Ukraine",
+            classification: "SECRET",
+            source_type: "IMINT",
+            region: "Eastern Europe",
+            summary: "Commercial satellite imagery shows a previously unreported vehicle depot near Donetsk with thermal signatures consistent with recently delivered heavy armor.",
+            date: "2026-02-25",
+            reliability: "B",
+            analyst: "GRIFFIN"
+        },
+        {
+            id: 16,
+            title: "Cryptocurrency Laundering Network in Southeast Asia",
+            classification: "SECRET",
+            source_type: "SIGINT",
+            region: "Southeast Asia",
+            summary: "Intercepted traffic links a network of crypto exchanges in Cambodia and Myanmar to DPRK-affiliated wallets laundering an estimated $120M over six months.",
+            date: "2026-03-20",
+            reliability: "B",
+            analyst: "CONDOR"
+        },
+        {
+            id: 17,
+            title: "Biolab Security Concerns in Central Asia",
+            classification: "TOP SECRET",
+            source_type: "HUMINT",
+            region: "Central Asia",
+            summary: "A source within the Kazakh Ministry of Health reports deteriorating safety protocols at a Soviet-era biological research facility near Almaty storing dangerous pathogen samples.",
+            date: "2026-01-15",
+            reliability: "C",
+            analyst: "RAVEN"
+        },
+        {
+            id: 18,
+            title: "Anti-Satellite Weapon Test Preparations",
+            classification: "TOP SECRET",
+            source_type: "IMINT",
+            region: "South Asia",
+            summary: "Imagery of a known Indian missile test range shows launch pad preparations consistent with a direct-ascent anti-satellite weapon test observed in previous cycles.",
+            date: "2026-03-25",
+            reliability: "B",
+            analyst: "GRIFFIN"
+        },
+        {
+            id: 19,
+            title: "Hezbollah Tunnel Network Expansion",
+            classification: "SECRET",
+            source_type: "IMINT",
+            region: "Middle East",
+            summary: "Updated imagery analysis reveals new tunnel entrance points along the southern Lebanese border, suggesting a 30% expansion of the known underground network.",
+            date: "2026-02-03",
+            reliability: "B",
+            analyst: "GRIFFIN"
+        },
+        {
+            id: 20,
+            title: "Arctic Military Base Construction by Russia",
+            classification: "CONFIDENTIAL",
+            source_type: "OSINT",
+            region: "Northern Europe",
+            summary: "Commercial shipping and open-source imagery confirm accelerated construction of a new Russian military facility on Franz Josef Land, including an extended airstrip.",
+            date: "2026-03-02",
+            reliability: "A",
+            analyst: "FALCON"
+        }
+    ];
+
+    // ── Questions Array (we'll add to this) ──
+    const questions = [
+        {
+            title: "Write a program that prints the summary of each intelligence report.",
+            code: `for report in reports:\n    print(report["summary"])`,
+            output: `Satellite imagery reveals three previously undetected submarine berths under construction at Yulin Naval Base. Construction appears 60% complete.\nIntercepted communications indicate a state-sponsored group is conducting reconnaissance against Lithuanian and Latvian power grid SCADA systems.\nA reliable source reports a cargo vessel registered in Panama is transporting small arms from Iran to an undisclosed port in northern Mozambique. ETA mid-March.\nOpen-source monitoring shows a 300% increase in anti-government social media activity in Venezuela over the past 30 days, correlating with food shortage reports.\nNew overhead imagery shows significant earthmoving activity 12 km northeast of the known Isfahan uranium conversion facility. Possible underground enrichment site.\nSignals intelligence reveals a coordinated bot network operating from St. Petersburg pushing disinformation narratives ahead of upcoming French municipal elections.\nA source with direct access reports a new militant training camp near Kidal accommodating approximately 200 recruits. Training includes IED construction.\nA senior diplomatic source confirms secret meetings between DPRK and Iranian officials in Kuala Lumpur focused on ballistic missile technology sharing.\nTrade data analysis indicates China has reduced rare earth exports by 40% while increasing domestic stockpiling, suggesting possible preparation for export restrictions.\nAcoustic sensors detected an unidentified submarine transiting the GIUK gap at low speed. Signature does not match known NATO or allied vessels.\nA vetted source reports Chinese-manufactured fentanyl precursors are being routed through Puerto Quetzal to Mexican cartel-linked labs in Sinaloa.\nElectronic intelligence confirms PLA units conducted GPS jamming exercises across a 200 km corridor in the Taiwan Strait over a 72-hour period.\nCounterintelligence reports a Russian intelligence officer operating under diplomatic cover approached a mid-level NATO logistics planner at a social event.\nUN and NGO reporting indicates over 500,000 displaced persons are moving toward the Kenyan border from southern Ethiopia and Somalia due to prolonged drought.\nCommercial satellite imagery shows a previously unreported vehicle depot near Donetsk with thermal signatures consistent with recently delivered heavy armor.\nIntercepted traffic links a network of crypto exchanges in Cambodia and Myanmar to DPRK-affiliated wallets laundering an estimated $120M over six months.\nA source within the Kazakh Ministry of Health reports deteriorating safety protocols at a Soviet-era biological research facility near Almaty storing dangerous pathogen samples.\nImagery of a known Indian missile test range shows launch pad preparations consistent with a direct-ascent anti-satellite weapon test observed in previous cycles.\nUpdated imagery analysis reveals new tunnel entrance points along the southern Lebanese border, suggesting a 30% expansion of the known underground network.\nCommercial shipping and open-source imagery confirm accelerated construction of a new Russian military facility on Franz Josef Land, including an extended airstrip.`
+        },
+        {
+            title: "Write a program that prints the region followed by the summary on the next line for each report. Use an f-string to format the output.",
+            code: `for report in reports:\n    print(f'Region: {report["region"]}\\nSummary: {report["summary"]}')\n    print("-" * 40)`,
+            output: `Region: East Asia\nSummary: Satellite imagery reveals three previously undetected submarine berths under construction at Yulin Naval Base. Construction appears 60% complete.\n----------------------------------------\nRegion: Eastern Europe\nSummary: Intercepted communications indicate a state-sponsored group is conducting reconnaissance against Lithuanian and Latvian power grid SCADA systems.\n----------------------------------------\nRegion: East Africa\nSummary: A reliable source reports a cargo vessel registered in Panama is transporting small arms from Iran to an undisclosed port in northern Mozambique. ETA mid-March.\n----------------------------------------\nRegion: South America\nSummary: Open-source monitoring shows a 300% increase in anti-government social media activity in Venezuela over the past 30 days, correlating with food shortage reports.\n----------------------------------------\nRegion: Middle East\nSummary: New overhead imagery shows significant earthmoving activity 12 km northeast of the known Isfahan uranium conversion facility. Possible underground enrichment site.\n----------------------------------------\nRegion: Western Europe\nSummary: Signals intelligence reveals a coordinated bot network operating from St. Petersburg pushing disinformation narratives ahead of upcoming French municipal elections.\n----------------------------------------\nRegion: West Africa\nSummary: A source with direct access reports a new militant training camp near Kidal accommodating approximately 200 recruits. Training includes IED construction.\n----------------------------------------\nRegion: East Asia\nSummary: A senior diplomatic source confirms secret meetings between DPRK and Iranian officials in Kuala Lumpur focused on ballistic missile technology sharing.\n----------------------------------------\nRegion: East Asia\nSummary: Trade data analysis indicates China has reduced rare earth exports by 40% while increasing domestic stockpiling, suggesting possible preparation for export restrictions.\n----------------------------------------\nRegion: Northern Europe\nSummary: Acoustic sensors detected an unidentified submarine transiting the GIUK gap at low speed. Signature does not match known NATO or allied vessels.\n----------------------------------------\nRegion: Central America\nSummary: A vetted source reports Chinese-manufactured fentanyl precursors are being routed through Puerto Quetzal to Mexican cartel-linked labs in Sinaloa.\n----------------------------------------\nRegion: East Asia\nSummary: Electronic intelligence confirms PLA units conducted GPS jamming exercises across a 200 km corridor in the Taiwan Strait over a 72-hour period.\n----------------------------------------\nRegion: Western Europe\nSummary: Counterintelligence reports a Russian intelligence officer operating under diplomatic cover approached a mid-level NATO logistics planner at a social event.\n----------------------------------------\nRegion: East Africa\nSummary: UN and NGO reporting indicates over 500,000 displaced persons are moving toward the Kenyan border from southern Ethiopia and Somalia due to prolonged drought.\n----------------------------------------\nRegion: Eastern Europe\nSummary: Commercial satellite imagery shows a previously unreported vehicle depot near Donetsk with thermal signatures consistent with recently delivered heavy armor.\n----------------------------------------\nRegion: Southeast Asia\nSummary: Intercepted traffic links a network of crypto exchanges in Cambodia and Myanmar to DPRK-affiliated wallets laundering an estimated $120M over six months.\n----------------------------------------\nRegion: Central Asia\nSummary: A source within the Kazakh Ministry of Health reports deteriorating safety protocols at a Soviet-era biological research facility near Almaty storing dangerous pathogen samples.\n----------------------------------------\nRegion: South Asia\nSummary: Imagery of a known Indian missile test range shows launch pad preparations consistent with a direct-ascent anti-satellite weapon test observed in previous cycles.\n----------------------------------------\nRegion: Middle East\nSummary: Updated imagery analysis reveals new tunnel entrance points along the southern Lebanese border, suggesting a 30% expansion of the known underground network.\n----------------------------------------\nRegion: Northern Europe\nSummary: Commercial shipping and open-source imagery confirm accelerated construction of a new Russian military facility on Franz Josef Land, including an extended airstrip.\n----------------------------------------`
+        },
+        {
+            title: "Write a function that takes the reports list as a parameter and builds a new list of dictionaries, where each dictionary contains only the <code>region</code> and <code>summary</code> keys from each report. Return the list. Then call the function and print the result.",
+            code: `from pprint import pprint\n\ndef get_region_summaries(reports):\n    result = []\n    for report in reports:\n        result.append({"region": report["region"], "summary": report["summary"]})\n    return result\n\npprint(get_region_summaries(reports))`,
+            output: `[{'region': 'East Asia',\n  'summary': 'Satellite imagery reveals three previously undetected submarine '\n             'berths under construction at Yulin Naval Base. Construction '\n             'appears 60% complete.'},\n {'region': 'Eastern Europe',\n  'summary': 'Intercepted communications indicate a state-sponsored group is '\n             'conducting reconnaissance against Lithuanian and Latvian power '\n             'grid SCADA systems.'},\n {'region': 'East Africa',\n  'summary': 'A reliable source reports a cargo vessel registered in Panama is '\n             'transporting small arms from Iran to an undisclosed port in '\n             'northern Mozambique. ETA mid-March.'},\n {'region': 'South America',\n  'summary': 'Open-source monitoring shows a 300% increase in anti-government '\n             'social media activity in Venezuela over the past 30 days, '\n             'correlating with food shortage reports.'},\n {'region': 'Middle East',\n  'summary': 'New overhead imagery shows significant earthmoving activity 12 '\n             'km northeast of the known Isfahan uranium conversion facility. '\n             'Possible underground enrichment site.'},\n {'region': 'Western Europe',\n  'summary': 'Signals intelligence reveals a coordinated bot network operating '\n             'from St. Petersburg pushing disinformation narratives ahead of '\n             'upcoming French municipal elections.'},\n {'region': 'West Africa',\n  'summary': 'A source with direct access reports a new militant training camp '\n             'near Kidal accommodating approximately 200 recruits. Training '\n             'includes IED construction.'},\n {'region': 'East Asia',\n  'summary': 'A senior diplomatic source confirms secret meetings between DPRK '\n             'and Iranian officials in Kuala Lumpur focused on ballistic '\n             'missile technology sharing.'},\n {'region': 'East Asia',\n  'summary': 'Trade data analysis indicates China has reduced rare earth '\n             'exports by 40% while increasing domestic stockpiling, suggesting '\n             'possible preparation for export restrictions.'},\n {'region': 'Northern Europe',\n  'summary': 'Acoustic sensors detected an unidentified submarine transiting '\n             'the GIUK gap at low speed. Signature does not match known NATO '\n             'or allied vessels.'},\n {'region': 'Central America',\n  'summary': 'A vetted source reports Chinese-manufactured fentanyl precursors '\n             'are being routed through Puerto Quetzal to Mexican cartel-linked '\n             'labs in Sinaloa.'},\n {'region': 'East Asia',\n  'summary': 'Electronic intelligence confirms PLA units conducted GPS jamming '\n             'exercises across a 200 km corridor in the Taiwan Strait over a '\n             '72-hour period.'},\n {'region': 'Western Europe',\n  'summary': 'Counterintelligence reports a Russian intelligence officer '\n             'operating under diplomatic cover approached a mid-level NATO '\n             'logistics planner at a social event.'},\n {'region': 'East Africa',\n  'summary': 'UN and NGO reporting indicates over 500,000 displaced persons '\n             'are moving toward the Kenyan border from southern Ethiopia and '\n             'Somalia due to prolonged drought.'},\n {'region': 'Eastern Europe',\n  'summary': 'Commercial satellite imagery shows a previously unreported '\n             'vehicle depot near Donetsk with thermal signatures consistent '\n             'with recently delivered heavy armor.'},\n {'region': 'Southeast Asia',\n  'summary': 'Intercepted traffic links a network of crypto exchanges in '\n             'Cambodia and Myanmar to DPRK-affiliated wallets laundering an '\n             'estimated $120M over six months.'},\n {'region': 'Central Asia',\n  'summary': 'A source within the Kazakh Ministry of Health reports '\n             'deteriorating safety protocols at a Soviet-era biological '\n             'research facility near Almaty storing dangerous pathogen '\n             'samples.'},\n {'region': 'South Asia',\n  'summary': 'Imagery of a known Indian missile test range shows launch pad '\n             'preparations consistent with a direct-ascent anti-satellite '\n             'weapon test observed in previous cycles.'},\n {'region': 'Middle East',\n  'summary': 'Updated imagery analysis reveals new tunnel entrance points '\n             'along the southern Lebanese border, suggesting a 30% expansion '\n             'of the known underground network.'},\n {'region': 'Northern Europe',\n  'summary': 'Commercial shipping and open-source imagery confirm accelerated '\n             'construction of a new Russian military facility on Franz Josef '\n             'Land, including an extended airstrip.'}]`
+        },
+        {
+            title: "Write a program that prints only the reports that have a classification of <code>TOP SECRET</code>. Print the full dictionary for each matching report.",
+            code: `for report in reports:\n    if report["classification"] == "TOP SECRET":\n        print(report)`,
+            output: `{'id': 2, 'title': 'Cyber Intrusion Targeting Baltic Energy Grid', 'classification': 'TOP SECRET', 'source_type': 'SIGINT', 'region': 'Eastern Europe', 'summary': 'Intercepted communications indicate a state-sponsored group is conducting reconnaissance against Lithuanian and Latvian power grid SCADA systems.', 'date': '2026-03-01', 'reliability': 'A', 'analyst': 'CONDOR'}\n{'id': 5, 'title': 'Nuclear Facility Expansion Near Isfahan', 'classification': 'TOP SECRET', 'source_type': 'IMINT', 'region': 'Middle East', 'summary': 'New overhead imagery shows significant earthmoving activity 12 km northeast of the known Isfahan uranium conversion facility. Possible underground enrichment site.', 'date': '2026-01-22', 'reliability': 'B', 'analyst': 'GRIFFIN'}\n{'id': 8, 'title': 'Diplomatic Back-Channel Between Pyongyang and Tehran', 'classification': 'TOP SECRET', 'source_type': 'HUMINT', 'region': 'East Asia', 'summary': 'A senior diplomatic source confirms secret meetings between DPRK and Iranian officials in Kuala Lumpur focused on ballistic missile technology sharing.', 'date': '2026-02-08', 'reliability': 'C', 'analyst': 'PHOENIX'}\n{'id': 12, 'title': 'Satellite Jamming Tests Over Taiwan Strait', 'classification': 'TOP SECRET', 'source_type': 'SIGINT', 'region': 'East Asia', 'summary': 'Electronic intelligence confirms PLA units conducted GPS jamming exercises across a 200 km corridor in the Taiwan Strait over a 72-hour period.', 'date': '2026-03-08', 'reliability': 'A', 'analyst': 'CONDOR'}\n{'id': 17, 'title': 'Biolab Security Concerns in Central Asia', 'classification': 'TOP SECRET', 'source_type': 'HUMINT', 'region': 'Central Asia', 'summary': 'A source within the Kazakh Ministry of Health reports deteriorating safety protocols at a Soviet-era biological research facility near Almaty storing dangerous pathogen samples.', 'date': '2026-01-15', 'reliability': 'C', 'analyst': 'RAVEN'}\n{'id': 18, 'title': 'Anti-Satellite Weapon Test Preparations', 'classification': 'TOP SECRET', 'source_type': 'IMINT', 'region': 'South Asia', 'summary': 'Imagery of a known Indian missile test range shows launch pad preparations consistent with a direct-ascent anti-satellite weapon test observed in previous cycles.', 'date': '2026-03-25', 'reliability': 'B', 'analyst': 'GRIFFIN'}`
+        },
+        {
+            title: "Write a function that takes the reports list as a parameter and returns a new list containing only the reports with a classification of <code>TOP SECRET</code>. Call the function and print the result.",
+            code: `from pprint import pprint\n\ndef get_top_secret(reports):\n    result = []\n    for report in reports:\n        if report["classification"] == "TOP SECRET":\n            result.append(report)\n    return result\n\npprint(get_top_secret(reports))`,
+            output: `[{'analyst': 'CONDOR',\n  'classification': 'TOP SECRET',\n  'date': '2026-03-01',\n  'id': 2,\n  'region': 'Eastern Europe',\n  'reliability': 'A',\n  'source_type': 'SIGINT',\n  'summary': 'Intercepted communications indicate a state-sponsored group is '\n             'conducting reconnaissance against Lithuanian and Latvian power '\n             'grid SCADA systems.',\n  'title': 'Cyber Intrusion Targeting Baltic Energy Grid'},\n {'analyst': 'GRIFFIN',\n  'classification': 'TOP SECRET',\n  'date': '2026-01-22',\n  'id': 5,\n  'region': 'Middle East',\n  'reliability': 'B',\n  'source_type': 'IMINT',\n  'summary': 'New overhead imagery shows significant earthmoving activity 12 '\n             'km northeast of the known Isfahan uranium conversion facility. '\n             'Possible underground enrichment site.',\n  'title': 'Nuclear Facility Expansion Near Isfahan'},\n {'analyst': 'PHOENIX',\n  'classification': 'TOP SECRET',\n  'date': '2026-02-08',\n  'id': 8,\n  'region': 'East Asia',\n  'reliability': 'C',\n  'source_type': 'HUMINT',\n  'summary': 'A senior diplomatic source confirms secret meetings between DPRK '\n             'and Iranian officials in Kuala Lumpur focused on ballistic '\n             'missile technology sharing.',\n  'title': 'Diplomatic Back-Channel Between Pyongyang and Tehran'},\n {'analyst': 'CONDOR',\n  'classification': 'TOP SECRET',\n  'date': '2026-03-08',\n  'id': 12,\n  'region': 'East Asia',\n  'reliability': 'A',\n  'source_type': 'SIGINT',\n  'summary': 'Electronic intelligence confirms PLA units conducted GPS jamming '\n             'exercises across a 200 km corridor in the Taiwan Strait over a '\n             '72-hour period.',\n  'title': 'Satellite Jamming Tests Over Taiwan Strait'},\n {'analyst': 'RAVEN',\n  'classification': 'TOP SECRET',\n  'date': '2026-01-15',\n  'id': 17,\n  'region': 'Central Asia',\n  'reliability': 'C',\n  'source_type': 'HUMINT',\n  'summary': 'A source within the Kazakh Ministry of Health reports '\n             'deteriorating safety protocols at a Soviet-era biological '\n             'research facility near Almaty storing dangerous pathogen '\n             'samples.',\n  'title': 'Biolab Security Concerns in Central Asia'},\n {'analyst': 'GRIFFIN',\n  'classification': 'TOP SECRET',\n  'date': '2026-03-25',\n  'id': 18,\n  'region': 'South Asia',\n  'reliability': 'B',\n  'source_type': 'IMINT',\n  'summary': 'Imagery of a known Indian missile test range shows launch pad '\n             'preparations consistent with a direct-ascent anti-satellite '\n             'weapon test observed in previous cycles.',\n  'title': 'Anti-Satellite Weapon Test Preparations'}]`
+        },
+        {
+            title: "Modify the previous function so that it accepts a classification as a second parameter, and returns reports matching that classification. Call the function with <code>\"SECRET\"</code> and print the result.",
+            code: `from pprint import pprint\n\ndef get_by_classification(reports, classification):\n    result = []\n    for report in reports:\n        if report["classification"] == classification:\n            result.append(report)\n    return result\n\npprint(get_by_classification(reports, "SECRET"))`,
+            output: `[{'analyst': 'GRIFFIN',\n  'classification': 'SECRET',\n  'date': '2026-02-14',\n  'id': 1,\n  'region': 'East Asia',\n  'reliability': 'B',\n  'source_type': 'IMINT',\n  'summary': 'Satellite imagery reveals three previously undetected submarine '\n             'berths under construction at Yulin Naval Base. Construction '\n             'appears 60% complete.',\n  'title': 'Unusual Naval Activity in South China Sea'},\n {'analyst': 'RAVEN',\n  'classification': 'SECRET',\n  'date': '2026-02-27',\n  'id': 3,\n  'region': 'East Africa',\n  'reliability': 'C',\n  'source_type': 'HUMINT',\n  'summary': 'A reliable source reports a cargo vessel registered in Panama is '\n             'transporting small arms from Iran to an undisclosed port in '\n             'northern Mozambique. ETA mid-March.',\n  'title': 'Arms Shipment via Mozambique Channel'},\n {'analyst': 'CONDOR',\n  'classification': 'SECRET',\n  'date': '2026-03-15',\n  'id': 6,\n  'region': 'Western Europe',\n  'reliability': 'A',\n  'source_type': 'SIGINT',\n  'summary': 'Signals intelligence reveals a coordinated bot network operating '\n             'from St. Petersburg pushing disinformation narratives ahead of '\n             'upcoming French municipal elections.',\n  'title': 'Foreign Influence Operation Targeting EU Elections'},\n {'analyst': 'RAVEN',\n  'classification': 'SECRET',\n  'date': '2026-03-05',\n  'id': 7,\n  'region': 'West Africa',\n  'reliability': 'B',\n  'source_type': 'HUMINT',\n  'summary': 'A source with direct access reports a new militant training camp '\n             'near Kidal accommodating approximately 200 recruits. Training '\n             'includes IED construction.',\n  'title': 'Militant Training Camp in Northern Mali'},\n {'analyst': 'CONDOR',\n  'classification': 'SECRET',\n  'date': '2026-03-22',\n  'id': 10,\n  'region': 'Northern Europe',\n  'reliability': 'B',\n  'source_type': 'SIGINT',\n  'summary': 'Acoustic sensors detected an unidentified submarine transiting '\n             'the GIUK gap at low speed. Signature does not match known NATO '\n             'or allied vessels.',\n  'title': 'Unidentified Submarine Contact in Norwegian Sea'},\n {'analyst': 'RAVEN',\n  'classification': 'SECRET',\n  'date': '2026-01-30',\n  'id': 11,\n  'region': 'Central America',\n  'reliability': 'B',\n  'source_type': 'HUMINT',\n  'summary': 'A vetted source reports Chinese-manufactured fentanyl precursors '\n             'are being routed through Puerto Quetzal to Mexican cartel-linked '\n             'labs in Sinaloa.',\n  'title': 'Fentanyl Precursor Shipments Through Guatemala'},\n {'analyst': 'PHOENIX',\n  'classification': 'SECRET',\n  'date': '2026-02-19',\n  'id': 13,\n  'region': 'Western Europe',\n  'reliability': 'A',\n  'source_type': 'HUMINT',\n  'summary': 'Counterintelligence reports a Russian intelligence officer '\n             'operating under diplomatic cover approached a mid-level NATO '\n             'logistics planner at a social event.',\n  'title': 'Attempted Recruitment of NATO Official in Brussels'},\n {'analyst': 'GRIFFIN',\n  'classification': 'SECRET',\n  'date': '2026-02-25',\n  'id': 15,\n  'region': 'Eastern Europe',\n  'reliability': 'B',\n  'source_type': 'IMINT',\n  'summary': 'Commercial satellite imagery shows a previously unreported '\n             'vehicle depot near Donetsk with thermal signatures consistent '\n             'with recently delivered heavy armor.',\n  'title': 'Weapons Cache Discovery in Eastern Ukraine'},\n {'analyst': 'CONDOR',\n  'classification': 'SECRET',\n  'date': '2026-03-20',\n  'id': 16,\n  'region': 'Southeast Asia',\n  'reliability': 'B',\n  'source_type': 'SIGINT',\n  'summary': 'Intercepted traffic links a network of crypto exchanges in '\n             'Cambodia and Myanmar to DPRK-affiliated wallets laundering an '\n             'estimated $120M over six months.',\n  'title': 'Cryptocurrency Laundering Network in Southeast Asia'},\n {'analyst': 'GRIFFIN',\n  'classification': 'SECRET',\n  'date': '2026-02-03',\n  'id': 19,\n  'region': 'Middle East',\n  'reliability': 'B',\n  'source_type': 'IMINT',\n  'summary': 'Updated imagery analysis reveals new tunnel entrance points '\n             'along the southern Lebanese border, suggesting a 30% expansion '\n             'of the known underground network.',\n  'title': 'Hezbollah Tunnel Network Expansion'}]`
+        },
+    ];
+
+    // ── State ──
+    let currentQuestion = 0;
+
+    // ── Render the data reference ──
+    function renderDataReference() {
+        const el = document.getElementById('dataContent');
+        const lines = ['reports = ['];
+        reports.forEach((r, i) => {
+            lines.push('    {');
+            Object.entries(r).forEach(([k, v]) => {
+                const val = typeof v === 'string' ? `"${v}"` : v;
+                lines.push(`        "${k}": ${val},`);
+            });
+            lines.push('    },');
+        });
+        lines.push(']');
+        el.textContent = lines.join('\n');
+    }
+
+    function toggleData() {
+        document.getElementById('dataReference').classList.toggle('visible');
+    }
+
+    // ── Build navigation buttons ──
+    function renderNav() {
+        const nav = document.getElementById('questionNav');
+        nav.innerHTML = '';
+        if (questions.length === 0) return;
+
+        questions.forEach((_, i) => {
+            const btn = document.createElement('button');
+            btn.textContent = i + 1;
+            btn.className = i === currentQuestion ? 'active' : '';
+            btn.onclick = () => goTo(i);
+            nav.appendChild(btn);
+        });
+    }
+
+    // ── Render the current question ──
+    function renderQuestion() {
+        const area = document.getElementById('questionArea');
+        const navBtns = document.getElementById('navButtons');
+
+        if (questions.length === 0) {
+            area.innerHTML = '<div class="no-questions">Questions will appear here as they are added.</div>';
+            navBtns.style.display = 'none';
+            return;
+        }
+
+        navBtns.style.display = 'flex';
+        const q = questions[currentQuestion];
+        const qNum = currentQuestion + 1;
+
+        let html = `
+            <div class="question-card">
+                <div class="question-number">Question ${qNum} of ${questions.length}</div>
+                <div class="question-text">${q.title}</div>
+                <div class="answer-section">`;
+
+        if (q.output) {
+            html += `
+                    <button class="toggle-btn output-btn" onclick="toggleBlock('outputBlock', this)">Show Expected Output</button>
+                    <div class="answer-block" id="outputBlock">
+                        <div class="answer-label">Expected Output</div>
+                        <pre>${escapeHtml(q.output)}</pre>
+                    </div>`;
+        }
+
+        html += `
+                    <button class="toggle-btn answer-btn" onclick="toggleBlock('answerBlock', this)">Show Answer</button>
+                    <div class="answer-block" id="answerBlock">
+                        <div class="answer-label">Sample Solution</div>
+                        <pre><code>${escapeHtml(q.code)}</code></pre>
+                    </div>
+                </div>
+            </div>`;
+
+        area.innerHTML = html;
+
+        document.getElementById('prevBtn').disabled = currentQuestion === 0;
+        document.getElementById('nextBtn').disabled = currentQuestion === questions.length - 1;
+    }
+
+    function toggleBlock(blockId, btn) {
+        const block = document.getElementById(blockId);
+        const isVisible = block.classList.toggle('visible');
+        const label = blockId === 'outputBlock' ? 'Expected Output' : 'Answer';
+        btn.textContent = isVisible ? `Hide ${label}` : `Show ${label}`;
+    }
+
+    function goTo(index) {
+        currentQuestion = index;
+        renderNav();
+        renderQuestion();
+    }
+
+    function navigate(dir) {
+        const next = currentQuestion + dir;
+        if (next >= 0 && next < questions.length) goTo(next);
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ── Init ──
+    renderDataReference();
+    renderNav();
+    renderQuestion();
+    </script>
+</body>
+</html>
