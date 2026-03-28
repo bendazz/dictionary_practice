@@ -274,6 +274,7 @@
     <div class="container">
         <div class="data-toggle">
             <button onclick="toggleData()">Show / Hide Data Reference</button>
+            <button onclick="downloadData()">Download intel_reports.py</button>
         </div>
         <div class="data-reference" id="dataReference">
             <pre id="dataContent"></pre>
@@ -571,6 +572,25 @@
 
     function toggleData() {
         document.getElementById('dataReference').classList.toggle('visible');
+    }
+
+    function downloadData() {
+        let py = '"""Seed data: a list of intelligence report dictionaries."""\n\nreports = [\n';
+        reports.forEach((r, i) => {
+            py += '    {\n';
+            Object.entries(r).forEach(([k, v]) => {
+                const val = typeof v === 'string' ? `"${v}"` : v;
+                py += `        "${k}": ${val},\n`;
+            });
+            py += '    },\n';
+        });
+        py += ']\n';
+        const blob = new Blob([py], { type: 'text/x-python' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'intel_reports.py';
+        a.click();
+        URL.revokeObjectURL(a.href);
     }
 
     // ── Build navigation buttons ──
